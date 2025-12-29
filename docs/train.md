@@ -23,6 +23,8 @@ Each item must follow this format strictly:
 
 Here, we give two examples.
 
+## Image and Multi-image data
+
 ### Taking "lmms-lab/LLaVA-NeXT-Data" as an example.
 
 Step1: Download data:
@@ -54,18 +56,53 @@ You can convert the JSON-based data into required parquet files following this s
 ```shell
 python prepare_data/sft/convert_json_parquet.py -j llavaov_jsonfile -i yourdata/images -o "work_dirs/data" --tag "json_data" -w 8
 ```
+
 NOTE:
 each json item should follow the llava format:
 ```python
 {
-    'conversations': xxx, # list
     'id': xxx,
-    'data_source': item.get('data_source', data_source), # string
+    'conversations': xxx, # list
+    'data_source': data_source, # string
     'images': images,  # list , "image" key is ok
 }
 ```
 
 After that, you need to calculate the token num follow the above step-3.
+
+## Video
+
+We provide the script to convert the llava video data into parquet format.
+
+Each json item should follow the llava format:
+```python
+{
+    'id': xxx,
+    'conversations': xxx, # list
+    'data_source': data_source, # string
+    'video': video_path,  #  string
+}
+```
+
+Convert the video data into the parquet:
+
+```bash
+jsonfile="LLaVA-Video-178K/0_30_s_academic_v0_1/0_30_s_academic_mc_v0_1_qa_processed.json"
+python prepare_data/sft/prepare_llavavideo2parquet.py \
+  --json_file $jsonfile \
+  --output_dir data/video/debug \
+  --video_dir "" \
+  --workers 16 \
+  --batch_size 100 \
+  --save_batch_size 10 \
+  --tag "debug"
+```
+**NOTE: We use the "<|video_pad|>" as the video special token. "<image\>" special token in the json file will be replaced by <|video_pad|> token**
+
+
+After that, you need to calculate the token num follow the above step-3.
+
+
 
 Now, you can use the prepared data to train your model!
 

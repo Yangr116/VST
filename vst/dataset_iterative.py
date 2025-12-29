@@ -60,26 +60,27 @@ class IterativeDataset(IterableDataset):
         self._transform = transform
 
     def __iter__(self):
-        for sample in self._data:
-            if self._transform is not None:
-                
-                # transformed_samples = self._transform(sample)
-                # if self.exceed_max_length(transformed_samples, sample):
-                #     sample['conversations'] = sample['conversations'][:2]
-                #     transformed_samples = self._transform(sample)
-                # if self.exceed_max_length(transformed_samples, sample):
-                #     sample['conversations'] = DUMMY_CONV
-                #     transformed_samples = self._transform(sample)
-                # yield transformed_samples
-                
-                try:
-                    transformed_samples = self._transform(sample)
-                    yield transformed_samples
-                except Exception as e:
-                    logger.error(e)
-                    continue
-            else:
-                yield sample
+        while True: # continuting to read data
+            for sample in self._data:
+                if self._transform is not None:
+                    
+                    # transformed_samples = self._transform(sample)
+                    # if self.exceed_max_length(transformed_samples, sample):
+                    #     sample['conversations'] = sample['conversations'][:2]
+                    #     transformed_samples = self._transform(sample)
+                    # if self.exceed_max_length(transformed_samples, sample):
+                    #     sample['conversations'] = DUMMY_CONV
+                    #     transformed_samples = self._transform(sample)
+                    # yield transformed_samples
+                    
+                    try:
+                        transformed_samples = self._transform(sample)
+                        yield transformed_samples
+                    except Exception as e:
+                        logger.error(e)
+                        continue
+                else:
+                    yield sample
 
     def load_state_dict(self, state_dict):
         self._data.load_state_dict(state_dict["dataset"])
