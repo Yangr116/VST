@@ -88,7 +88,7 @@ Convert the video data into the parquet:
 
 ```bash
 jsonfile="LLaVA-Video-178K/0_30_s_academic_v0_1/0_30_s_academic_mc_v0_1_qa_processed.json"
-python prepare_data/sft/prepare_llavavideo2parquet.py \
+python prepare_data/sft/convert_json_parquet_video.py \
   --json_file $jsonfile \
   --output_dir data/video/debug \
   --video_dir "" \
@@ -97,11 +97,10 @@ python prepare_data/sft/prepare_llavavideo2parquet.py \
   --save_batch_size 10 \
   --tag "debug"
 ```
-**NOTE: We use the "<|video_pad|>" as the video special token. "<image\>" special token in the json file will be replaced by <|video_pad|> token**
+**NOTE: We use the "<|video_pad|>" as the video special token. "<image\>" special token in the json file will be replaced by <|video_pad|> token. Please check [here](https://github.com/Yangr116/VST/blob/b32988e85078e2ccac10f662100270fa8550b0d6/prepare_data/sft/convert_json_parquet_video.py#L230-L250) for details.**
 
 
 After that, you need to calculate the token num follow the above step-3.
-
 
 
 Now, you can use the prepared data to train your model!
