@@ -21,7 +21,7 @@ Each item must follow this format strictly:
 ```
 
 
-Here, we give two examples.
+Here, we give image and video examples.
 
 ## Image and Multi-image data
 
@@ -39,7 +39,7 @@ Step2: Convert the data into required parquet format
 python prepare_data/sft/convert_llavanext_parquet.py --data_dir "your_data/LLaVA-NeXT-Data/data" -o "your_save_path" --tag "llava_next_vst"
 ```
 
-Then, to create a yaml file to record the data path:
+Then, to create a yaml file to record the data path (like [config/data/llavanext.yaml](config/data/llavanext.yaml)):
 ```yaml
 - ann_path: llava_next_vst
   data_dir: work_dirs/data # revise to your data directory
@@ -100,10 +100,9 @@ python prepare_data/sft/convert_json_parquet_video.py \
 **NOTE: We use the "<|video_pad|>" as the video special token. "<image\>" special token in the json file will be replaced by <|video_pad|> token. Please check [here](https://github.com/Yangr116/VST/blob/b32988e85078e2ccac10f662100270fa8550b0d6/prepare_data/sft/convert_json_parquet_video.py#L230-L250) for details.**
 
 
-After that, you need to calculate the token num follow the above step-3.
+After that, you need to prepare a yaml file following step-2 and calculate the token num following step-3.
 
-
-Now, you can use the prepared data to train your model!
+Now, you can use **the prepared data** and **data config** to train your model!
 
 # Train
 
