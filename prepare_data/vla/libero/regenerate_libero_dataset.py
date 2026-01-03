@@ -38,7 +38,7 @@ import robosuite.utils.transform_utils as T
 import tqdm
 from libero.libero import benchmark
 
-from vlm3d.vla.libero.libero_utils import (
+from vst.vla.libero.libero_utils import (
     get_libero_dummy_action,
     get_libero_env,
 )

@@ -6,6 +6,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 import json
 import time
+import argparse
 from huggingface_hub import hf_hub_download, snapshot_download
 
 
@@ -36,13 +37,31 @@ def download(repo_id, cache_dir, local_dir):
         print(f"done!")
 
 if __name__ == "__main__":
-    repo_ids = [
-        "lmms-lab/LLaVA-NeXT-Data"
-        ]
-    cache_dir = "/mnt/bn/ic-vlm/rayyang/cache/cache_hf"
-    local_dir = "/mnt/bn/ic-vlm/rayyang/data/2D/"
-    os.makedirs(cache_dir, exist_ok=True)
-    for repo_id in repo_ids:
-        _local_dir = os.path.join(local_dir, os.path.basename(repo_id))
-        os.makedirs(_local_dir, exist_ok=True)
-        download(repo_id, cache_dir=cache_dir, local_dir=_local_dir)
+    parser = argparse.ArgumentParser(
+        description="Download a repository from Hugging Face Hub to a local directory.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter # Automatically show default values in help message
+    )
+    parser.add_argument(
+        "--repo_id", 
+        type=str, 
+        default="lmms-lab/LLaVA-NeXT-Data",
+        help="The ID of the Hugging Face repository to download."
+    )
+    parser.add_argument(
+        "--cache_dir", 
+        type=str, 
+        default="~/.cache/cache_hf",
+        help="The directory for Hugging Face to cache files."
+    )
+    parser.add_argument(
+        "--local_dir", 
+        type=str, 
+        default="data/2D/",
+        help="The root directory to save the downloaded files. Files will be stored under 'local_dir/repo_name'."
+    )
+    args = parser.parse_args()
+
+    os.makedirs(args.cache_dir, exist_ok=True)
+    _local_dir = os.path.join(args.local_dir, os.path.basename(args.repo_id))
+    os.makedirs(_local_dir, exist_ok=True)
+    download(args.repo_id, cache_dir=args.cache_dir, local_dir=_local_dir)

@@ -59,15 +59,16 @@ if TYPE_CHECKING:
 
     from veomni.data.chat_template import ChatTemplate
 
-from vlm3d.utils.utils_model import print_model_params
-from vlm3d.utils.data_utils import sample_data
-from vlm3d.preprocess import SampleTransform
-from vlm3d.load import build_vlm3d_model
-from vlm3d.dataset_iterative import build_iterative_dataset
-from vlm3d.chat_template import Qwen2_5VLChatTemplate
-from vlm3d.constant import QWEN_IMAGE_INPUT_INDEX, QWEN_VIDEO_INPUT_INDEX
-from vlm3d.vla.action_tokenizer import ActionTokenizer, ActionTokenizerV2
-from vlm3d.preprocess_vla import SampleTransformVLA
+from vst.utils.utils_model import print_model_params
+from vst.utils.data_utils import sample_data
+from vst.preprocess import SampleTransform
+from vst.load import build_vst_custom_model
+from vst.dataset_iterative import build_iterative_dataset
+from vst.chat_template import Qwen2_5VLChatTemplate
+from vst.constant import QWEN_IMAGE_INPUT_INDEX, QWEN_VIDEO_INPUT_INDEX
+
+from vst.vla.action_tokenizer import ActionTokenizer, ActionTokenizerV2
+from vst.preprocess_vla import SampleTransformVLA
 
 from transformers import AddedToken, Qwen2VLProcessor, Qwen2_5_VLProcessor
 import math

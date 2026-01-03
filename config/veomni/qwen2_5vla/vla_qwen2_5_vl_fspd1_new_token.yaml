@@ -6,7 +6,7 @@ model:
   add_tokens: ['action_token']
 
 data:
-  train_path: config/dataconfig/vla/libero_norm_spatial.yaml
+  train_path: config/data/vla/libero_norm_spatial.yaml
   chat_template: qwen2_5vl
   max_seq_len: 2048
   fps: 2

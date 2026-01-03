@@ -13,12 +13,13 @@ from veomni.models import build_foundation_model, build_processor, save_model_as
 parser = argparse.ArgumentParser()
 parser.add_argument("save_checkpoint_path", type=str)
 parser.add_argument("--output_dir", type=str, default=None)
+parser.add_argument("--ckpt_manager", default='dcp')
 args = parser.parse_args()
 
 
 save_checkpoint_path = args.save_checkpoint_path
 output_dir = str(Path(save_checkpoint_path).parent.parent) if args.output_dir is None else args.output_dir
-ckpt_manager = "omnistore"
+ckpt_manager = args.ckpt_manager
 os.makedirs(output_dir, exist_ok=True)
 hf_weights_path = os.path.join(save_checkpoint_path, f"hf_ckpt_{str(Path(save_checkpoint_path).stem)}")
 

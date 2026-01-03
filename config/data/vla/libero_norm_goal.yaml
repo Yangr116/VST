@@ -1,0 +1,4 @@
+# 28_378_046
+- ann_path: libero_goal_no_noops
+  data_dir: dataset/parquet/vla/libero
+  token_num: 5203615

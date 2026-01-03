@@ -1,5 +1,3 @@
-# Copyright 2025 [Visual Spatial Tuning] Authors
-
 import os
 import random
 import json
@@ -12,19 +10,10 @@ from multiprocessing import Pool
 import numpy as np
 import datasets as hf_datasets
 import argparse
+import io
 
 
-NORM_STATES = json.load(open("prepare_data/vla/libero/norm_stats.json"))['norm_stats']
-ACTION_MEAN = np.array(NORM_STATES['actions']['mean'])
-ACTION_STD = np.array(NORM_STATES['actions']['std'])
-ACTION_Q01 = np.array(NORM_STATES['actions']['q01'])
-ACTION_Q99 = np.array(NORM_STATES['actions']['q99'])
-
-
-# 假设你有这个函数
 def encode_image_to_bytes(img):
-    # 你的实现
-    import io
     buf = io.BytesIO()
     img.save(buf, format='PNG')
     return buf.getvalue()
@@ -65,7 +54,11 @@ def process_file(datafile):
                     command = command[:-1]
                     action_norm = _normalize_quantile(action)
                     # import pdb; pdb.set_trace()
-                    meta_info = dict(action=action_norm.tolist(), action_unnorm=action.tolist(), language_instruction=command, data_source=datafile)
+                    meta_info = dict(
+                        action=action_norm.tolist(), 
+                        action_unnorm=action.tolist(), 
+                        language_instruction=command, 
+                        data_source=datafile)
                     meta_info = json.dumps(meta_info)
                     parquet_item = dict(
                         id=uid,
@@ -100,20 +93,21 @@ if __name__ == "__main__":
     LIBERO_DIR = args.libero_dir
 
     data_dir_list = [
-        f"{LIBERO_DIR}/libero_goal_no_noops",
-        f"{LIBERO_DIR}/libero_object_no_noops",
-        f"{LIBERO_DIR}/libero_spatial_no_noops",
-        f"{LIBERO_DIR}/libero_10_no_noops",
+        (f"{LIBERO_DIR}/libero_goal_no_noops", "prepare_data/vla/libero/norm_stats_libero_goal.json"),
+        (f"{LIBERO_DIR}/libero_object_no_noops", "prepare_data/vla/libero/norm_stats_libero_object.json"),
+        (f"{LIBERO_DIR}/libero_spatial_no_noops", "prepare_data/vla/libero/norm_stats_libero_spatial.json"),
+        (f"{LIBERO_DIR}/libero_10_no_noops", "prepare_data/vla/libero/norm_stats_libero_10.json")
     ]
 
-    for data_dir in data_dir_list:
+    for (data_dir, norm_state_file) in data_dir_list:
+
+        NORM_STATES = json.load(open(norm_state_file))['norm_stats']
+        ACTION_MEAN = np.array(NORM_STATES['action']['mean'])
+        ACTION_STD = np.array(NORM_STATES['action']['std'])
+        ACTION_Q01 = np.array(NORM_STATES['action']['q01'])
+        ACTION_Q99 = np.array(NORM_STATES['action']['q99'])
 
         datafiles = glob(os.path.join(data_dir, "*.hdf5"))
-
-        # if True:
-        #     process_file(datafile=datafiles[0])
-        #     import sys
-        #     sys.exit()
 
         stem_name = str(Path(data_dir).stem)
         save_dir = os.path.join(_save_dir, stem_name)
