@@ -114,3 +114,10 @@ python3 -m verl.trainer.main \
 * We add the new dataset class `RLHFDatasetVLM3D` in `verl/utils/dataset.py` to support our implementation.
 * Our reward function is in `examples/reward_function/vlm3d.py`.
 * More custom settings please follow [EasyR1](https://github.com/hiyouga/EasyR1)
+
+
+After training, you need to merge the weights into huggingface format:
+```shell
+python scripts/model_merger.py --local_dir "$save_checkpoint_path/global_step_xxx/actor"
+```
+The converted weights will be saved into `$save_checkpoint_path/global_step_xxx/actor/huggingface`

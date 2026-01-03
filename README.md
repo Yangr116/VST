@@ -26,25 +26,6 @@ We introduce **Visual Spatial Tuning (VST)**, a comprehensive framework designed
 
 ---
 
-## 📊 Dataset Overview
-
-![Dataset Image](assets/dataset.jpg)
-
-### 🖼️ VST-Perception (VST-P)
-- **4.1M samples** across **19 tasks** for supervised fine-tuning.
-- Covers three primary vision scenarios: *single-image*, *multi-image*, and *video*.
-- VLMs tuned on VST-P show strong improvements in spatial perception:
-  - ~20% boost on CVBench-3D
-  - ~5% increase on BLINK
-  - ~16% gain on VSIBench
-
-### 🧠 VST-Reasoning (VST-R)
-- **135K samples**, split into:
-  - **Reasoning steps (CoT)**: Teach models how to reason spatially.
-  - **Rule-checkable data**: Used in online RL to further enhance reasoning skills.
-- VLMs tuned on VST-R demonstrate:
-  - 8.9% improvement on MMSI-Bench
-
 ---
 
 ## 🏷️ Model Card
@@ -140,18 +121,19 @@ pip install qwen-vl-utils
 
 ### Training & Evaluation
 
-Please follow [docs/train.md](./docs/train.md) to prepare env, data and train models.
+**SFT**: Please follow [docs/train.md](./docs/train.md) to prepare env, data and train models.
 
-Please follow [projects/spatial_rl/README.md](projects/spatial_rl/README.md) to prepare env, data and train models using RL.
+**RL**: Please follow [projects/spatial_rl/README.md](projects/spatial_rl/README.md) to prepare env, data and train models using RL.
 
-Please see [docs/evaluation.md](./docs/evaluation.md) to evaluate models.
+**Evaluation**: Please follow [docs/evaluation.md](./docs/evaluation.md) to evaluate models.
 
 
 ### Cookbook
 
-* [scene understanding](cookbook/scene_understanding.ipynb)
-* [3d object detection](cookbook/object_detection_3d.ipynb)
-* still updating
+| Cookbook           | Description                       |
+|---------------|-----------------------------------|
+| [scene understanding](cookbook/scene_understanding.ipynb) | Example for single image and multi-image inference           |
+| [3d object detection](cookbook/object_detection_3d.ipynb) | Example for 3D object detection             |
 
 
 ### Using 🤗  Transformers to Chat
@@ -223,6 +205,26 @@ output_text = processor.batch_decode(
 )
 print(output_text[0])
 ```
+
+
+## 📊 Dataset Overview
+
+![Dataset Image](assets/dataset.jpg)
+
+### 🖼️ VST-Perception (VST-P)
+- **4.1M samples** across **19 tasks** for supervised fine-tuning.
+- Covers three primary vision scenarios: *single-image*, *multi-image*, and *video*.
+- VLMs tuned on VST-P show strong improvements in spatial perception:
+  - ~20% boost on CVBench-3D
+  - ~5% increase on BLINK
+  - ~16% gain on VSIBench
+
+### 🧠 VST-Reasoning (VST-R)
+- **135K samples**, split into:
+  - **Reasoning steps (CoT)**: Teach models how to reason spatially.
+  - **Rule-checkable data**: Used in online RL to further enhance reasoning skills.
+- VLMs tuned on VST-R demonstrate:
+  - 8.9% improvement on MMSI-Bench
 
 
 ## 📜 License
