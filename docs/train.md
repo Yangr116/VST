@@ -219,10 +219,18 @@ For example:
 
 ## Train VLA model
 
+We add two parameters in the config:
+
+| Key           | Description                       |
+|---------------|-----------------------------------|
+| enable_vla    | `true` using the vla transform           |
+| add_tokens    | `['action_token']` add new action tokens |
+
+
 To train the action model on the spatial subset:
 ```shell
 bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_fspd1_new_token.yaml \
-    --model.model_path '/mnt/bn/ic-vlm/rayyang/cache/cache_model/Qwen2.5-VL-3B-Instruct' \
+    --model.model_path 'rayruiyang/VST-3B-SFT' \
     --data.train_path 'config/data/vla/libero_norm_spatial.yaml' \
     --data.train_size 5_800_000 \
     --train.output_dir 'work_dirs/20250824_vla_qwen2_5vl_3b_spatial_sft_libero_spatial' \
