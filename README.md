@@ -138,6 +138,15 @@ pip install transformers
 pip install qwen-vl-utils
 ```
 
+### Training & Evaluation
+
+Please follow [docs/train.md](./docs/train.md) to prepare env, data and train models.
+
+Please follow [projects/spatial_rl/README.md](projects/spatial_rl/README.md) to prepare env, data and train models using RL.
+
+Please see [docs/evaluation.md](./docs/evaluation.md) to evaluate models.
+
+
 ### Cookbook
 
 * [scene understanding](cookbook/scene_understanding.ipynb)
@@ -214,31 +223,6 @@ output_text = processor.batch_decode(
 )
 print(output_text[0])
 ```
-
-### Train
-
-```bash
-git clone https://github.com/Yangr116/VST
-cd VST
-# install veomni
-git clone -b v0.1.3 https://github.com/ByteDance-Seed/VeOmni.git third_party/VeOmni
-cd third_party/VeOmni
-pip install -e .
-# install requirements
-cd ../..
-pip install -r requirements.txt
-# install flash-attn (recommend)
-pip install flash-attn --no-build-isolation
-```
-
-NOTE: we use torch2.5.1+cu124, other torch version is also fine.
-
-Please follow [docs/train.md](./docs/train.md) to prepare data and train models.
-
-
-### Evaluation
-
-Please see [docs/evaluation.md](./docs/evaluation.md)
 
 
 ## 📜 License

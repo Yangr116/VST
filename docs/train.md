@@ -1,8 +1,28 @@
 
 # Content
+- [Prepare Env](#-Prepare-ENV)
 - [Prepare data](#-Prepare-data)
 - [Train](#-Train)
 - [Adapt to VLA Model](#-Adapt-to-VLA-Model)
+
+
+# Prepare ENV
+
+```bash
+git clone https://github.com/Yangr116/VST
+cd VST
+# install veomni
+git clone -b v0.1.3 https://github.com/ByteDance-Seed/VeOmni.git third_party/VeOmni
+cd third_party/VeOmni
+pip install -e .
+# install requirements
+cd ../..
+pip install -r requirements.txt
+# install flash-attn (recommend)
+pip install flash-attn --no-build-isolation
+```
+
+NOTE: we use torch2.6.0+cu126, other torch version is also fine.
 
 
 # Prepare data
@@ -134,7 +154,10 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
     --train.output_dir 'work_dirs/qwen2_5vl_sft_llavanext_example' \
     --train.wandb_name 'qwen2_5vl_sft_llavanext_example'
 ```
-You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local path.
+**NOTE**
+* You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local path.
+* You need to clear `data.train_size`, which is the number of token in the current dataset.
+
 
 #### Merge model
 
