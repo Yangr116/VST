@@ -46,7 +46,7 @@ The sample saved in json file should have the following format:
   * `multi_choices_score`: used for multi-choices qa data
 
 * The `meta_info=json.dumps({'mode': ['multi_choices_score', xxx], 'question_type': 'multi_choices'})`
-* If the question doesn't inclue a 
+* If the question doesn't inclue the image_flag `<|image_pad|>`, it will be added during converting data into parquet format. One `<|image_pad|>` equals to one image. Two image should place two `<|image_pad|>`.
 
 Convert the prepared json file into the parquet:
 ```
