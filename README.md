@@ -233,7 +233,7 @@ print(output_text[0])
   - 8.9% improvement on MMSI-Bench
 
 
-There are 500K data points [[rayruiyang/openvst_500k](https://huggingface.co/datasets/rayruiyang/openvst_500k)] for academic purposes. You can download them:
+There are 500K reproduced data points [[rayruiyang/openvst_500k](https://huggingface.co/datasets/rayruiyang/openvst_500k)] for academic purposes. You can download them:
 ```shell
 python tools/download_hf_data.py --repo_id="rayruiyang/openvst_500k" --local_dir $YOUR_LOCAL_PATH
 ```
