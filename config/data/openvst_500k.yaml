@@ -1,0 +1,20 @@
+# please replace `$YOUR_LOCAL_PATH` to your save dir
+
+- ann_path: mi_camera_motion
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: mi_correspondence
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: mi_object_object_relation
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: mi_scene_caption
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: si_depth_comparison
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: si_distance
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: si_measurement
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: si_scene_caption
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k
+- ann_path: video
+  data_dir: $YOUR_LOCAL_PATH/openvst_500k

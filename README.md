@@ -4,6 +4,7 @@
 
 [![Paper](https://img.shields.io/badge/paper-5f16a8?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2511.05491)
 [![Project Page](https://img.shields.io/badge/Blog-3858bf?style=for-the-badge&logo=homepage&logoColor=white)](https://yangr116.github.io/vst_project/)
+[![Dataset](https://img.shields.io/badge/Datasets-4d8cd8?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/datasets/rayruiyang/openvst_500k)
 [![Weights](https://img.shields.io/badge/Model%20Weights-63cad3?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/collections/rayruiyang/vst)
 </div>
 
@@ -36,6 +37,11 @@ We introduce **Visual Spatial Tuning (VST)**, a comprehensive framework designed
 | VST-3B-RL      | [rayruiyang/VST-3B-RL](https://huggingface.co/rayruiyang/VST-3B-RL)           |
 | VST-7B-SFT     | [rayruiyang/VST-7B-SFT](https://huggingface.co/rayruiyang/VST-7B-SFT)           |
 | VST-7B-RL      | [rayruiyang/VST-7B-RL](https://huggingface.co/rayruiyang/VST-7B-RL)           |
+
+```shell
+# download models into checkpoints
+python tools/download_hf_model.py --model_list rayruiyang/VST-3B-SFT rayruiyang/VST-3B-RL rayruiyang/VST-7B-SFT rayruiyang/VST-7B-RL --local_dir checkpoints
+```
 
 <details>
   <summary>Click to see performance 📈 </summary>
@@ -225,6 +231,12 @@ print(output_text[0])
   - **Rule-checkable data**: Used in online RL to further enhance reasoning skills.
 - VLMs tuned on VST-R demonstrate:
   - 8.9% improvement on MMSI-Bench
+
+
+There are 500K data points [[rayruiyang/openvst_500k](https://huggingface.co/datasets/rayruiyang/openvst_500k)] for academic purposes. You can download them:
+```shell
+python tools/download_hf_data.py --repo_id="rayruiyang/openvst_500k" --local_dir $YOUR_LOCAL_PATH
+```
 
 
 ## 📜 License

@@ -25,7 +25,50 @@ pip install flash-attn --no-build-isolation
 NOTE: we use torch2.6.0+cu126, other torch version is also fine.
 
 
-# Prepare data
+# Prepare VST data
+
+### Step1: download data
+```shell
+python tools/download_hf_data.py --repo_id="rayruiyang/openvst_500k" --local_dir $YOUR_LOCAL_PATH/openvst_500k
+```
+
+### Step2: download and preprocess video data
+For the video data, please follow [VLM-3R](https://github.com/VITA-Group/VLM-3R/tree/main/vlm_3r_data_process) to prepare the video files of Scannet, Scannetpp, and arkitscenes:
+
+```shell
+processed_data/
+├── arkitscenes
+│   └── videos
+│       └── train
+├── scannet
+│   └── videos
+│       ├── train
+│       └── val
+└── scannetpp
+    └── videos
+```
+Then, convert the video file into parquet:
+```bash
+jsonfile="openvst/video/video.json"
+python prepare_data/sft/convert_json_parquet_video.py \
+  --json_file $jsonfile \
+  --output_dir "$YOUR_LOCAL_PATH/openvst_500k/video" \
+  --video_dir "dataset/processed_data" \
+  --workers 16 \
+  --batch_size 100 \
+  --save_batch_size 10 \
+  --tag "vst_video"
+```
+
+### Step3: prepare data config
+Replace `$YOUR_LOCAL_PATH` in the generated file `config/data/openvst_500k.yaml` to your save directory.
+
+Or generate the data config:
+```shell
+python tools/generate_data_config.py $YOUR_LOCAL_PATH/openvst_500k config/data/openvst_500k.yaml
+```
+
+# Prepare custom data
 
 We prepare the data into the parquet format and calculate the total token nums (used for data packing and iterable dataloder).
 
@@ -101,6 +144,7 @@ After that, you need to calculate the token num follow the above step-3.
 
 ## Video
 
+### Prepare custom video data
 We provide the script to convert the llava video data into parquet format.
 
 Each json item should follow the llava format:
@@ -157,7 +201,7 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
 **NOTE**
 * You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local path.
 * You need to clear `data.train_size`, which is the number of token in the current dataset.
-
+* video training: reduce `data.buffer_size` if you want to train video only.
 
 #### Merge model
 
@@ -197,7 +241,7 @@ The huggingface model will be saved to `work_dirs/qwen2_5vl_sft_llavanext_exampl
 
 
 ## Stage 3: RL
-TODO
+See [projects/spatial_rl/README.md](projects/spatial_rl/README.md)
 
 # Adapt to VLA Model
 
