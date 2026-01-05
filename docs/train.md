@@ -262,7 +262,7 @@ python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoin
 ```
 
 ## Stage 3: RL (Reinforcement Learning)
-Please refer to [projects/spatial_rl/README.md](projects/spatial_rl/README.md).
+Please refer to [projects/spatial_rl/README.md](https://github.com/Yangr116/VST/blob/master/projects/spatial_rl/README.md).
 
 # Adapt to VLA Model
 
