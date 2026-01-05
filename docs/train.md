@@ -49,7 +49,7 @@ processed_data/
 ```
 Then, convert the video file into parquet:
 ```bash
-jsonfile="openvst/video/video.json"
+jsonfile="$YOUR_LOCAL_PATH/vst_500k/video/video.json"
 python prepare_data/sft/convert_json_parquet_video.py \
   --json_file $jsonfile \
   --output_dir "$YOUR_LOCAL_PATH/vst_500k/video" \
