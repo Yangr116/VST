@@ -206,6 +206,9 @@ class SampleTransform:
         self.is_warmup = is_warmup
         self.enable_predict_fov = enable_predict_fov
 
+        # set model image_id and video_id, this is align with the model
+
+
     def process_bbox3d(self, _sample: Dict):
         sample = copy.deepcopy(_sample)
         camera_params = None

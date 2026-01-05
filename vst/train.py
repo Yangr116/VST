@@ -50,14 +50,13 @@ from veomni.optim import build_lr_scheduler, build_optimizer
 from veomni.utils import helper
 from veomni.utils.arguments import DataArguments, ModelArguments, TrainingArguments, parse_args, save_args
 from veomni.utils.dist_utils import all_reduce
-from veomni.models.transformers.qwen2_vl.modeling_qwen2_vl import Qwen2VLForConditionalGeneration
-from veomni.models.transformers.qwen2_5vl.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGeneration
 
 if TYPE_CHECKING:
     from transformers import ProcessorMixin
 
     from veomni.data.chat_template import ChatTemplate
 
+from vst.models.transformers.qwen2_5vl.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGeneration
 from vst.utils.utils_model import print_model_params
 from vst.utils.data_utils import sample_data
 from vst.preprocess import SampleTransform

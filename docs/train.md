@@ -254,6 +254,7 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
     --model.model_path 'Qwen/Qwen2.5-VL-3B-Instruct' \
     --data.train_path 'config/data/llavanext.yaml' \
     --data.train_size 20_531_761 \
+    --data.buffer_size 6000 \
     --train.output_dir 'work_dirs/qwen2_5vl_sft_llavanext_example' \
     --train.wandb_name 'qwen2_5vl_sft_llavanext_example'
 ```
@@ -262,6 +263,7 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
 > *   **Model Path:** You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local model path.
 > *   **Train Size:** Ensure `data.train_size` matches the total number of tokens in your dataset.
 > *   **Video Training:** Reduce `data.buffer_size` to `2000` if you are training on video data only to manage memory usage.
+> *   **Max sequence length**: `data.max_seq_len` is default to 16384. During preprocessing video, max frames are limited by `max_seq_len`. See vst/utils/vision_process.py (Line 63).
 
 ### Merge Model
 If the model is saved in the original DCP format, merge it into Hugging Face format for evaluation:
@@ -299,6 +301,21 @@ python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoin
 
 ## Stage 3: RL (Reinforcement Learning)
 Please refer to [projects/spatial_rl/README.md](https://github.com/Yangr116/VST/blob/master/projects/spatial_rl/README.md).
+
+## Debug
+Use this script to debug:
+```bash
+bash scripts/debug.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_example.yaml \
+    --model.model_path 'Qwen/Qwen2.5-VL-3B-Instruct' \
+    --data.train_path 'config/data/llavanext.yaml' \
+    --data.train_size 20_531_761 \
+    --data.buffer_size 1000 \
+    --data.num_workers 0 \
+    --train.micro_batch_size 1 \
+    --train.global_batch_size 2 \
+    --train.output_dir 'work_dirs/debug' \
+    --train.wandb_name 'qwen2_5vl_sft_llavanext_example'
+```
 
 # Adapt to VLA Model
 
