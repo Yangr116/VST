@@ -4,7 +4,7 @@
 
 [![Paper](https://img.shields.io/badge/paper-5f16a8?style=for-the-badge&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2511.05491)
 [![Project Page](https://img.shields.io/badge/Blog-3858bf?style=for-the-badge&logo=homepage&logoColor=white)](https://yangr116.github.io/vst_project/)
-[![Dataset](https://img.shields.io/badge/Datasets-4d8cd8?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/datasets/rayruiyang/openvst_500k)
+[![Dataset](https://img.shields.io/badge/Datasets-4d8cd8?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/datasets/rayruiyang/vst_500k)
 [![Weights](https://img.shields.io/badge/Model%20Weights-63cad3?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/collections/rayruiyang/vst)
 </div>
 
@@ -233,9 +233,9 @@ print(output_text[0])
   - 8.9% improvement on MMSI-Bench
 
 
-There are 500K reproduced data points [[rayruiyang/openvst_500k](https://huggingface.co/datasets/rayruiyang/openvst_500k)] for academic purposes. You can download them:
+There are 500K reproduced data points [[rayruiyang/vst_500k](https://huggingface.co/datasets/rayruiyang/vst_500k)] for academic purposes. You can download them:
 ```shell
-python tools/download_hf_data.py --repo_id="rayruiyang/openvst_500k" --local_dir $YOUR_LOCAL_PATH
+python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH
 ```
 
 

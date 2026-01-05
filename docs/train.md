@@ -29,7 +29,7 @@ NOTE: we use torch2.6.0+cu126, other torch version is also fine.
 
 ### Step1: download data
 ```shell
-python tools/download_hf_data.py --repo_id="rayruiyang/openvst_500k" --local_dir $YOUR_LOCAL_PATH/openvst_500k
+python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH/vst_500k
 ```
 
 ### Step2: download and preprocess video data
@@ -52,7 +52,7 @@ Then, convert the video file into parquet:
 jsonfile="openvst/video/video.json"
 python prepare_data/sft/convert_json_parquet_video.py \
   --json_file $jsonfile \
-  --output_dir "$YOUR_LOCAL_PATH/openvst_500k/video" \
+  --output_dir "$YOUR_LOCAL_PATH/vst_500k/video" \
   --video_dir "dataset/processed_data" \
   --workers 16 \
   --batch_size 100 \
@@ -61,11 +61,11 @@ python prepare_data/sft/convert_json_parquet_video.py \
 ```
 
 ### Step3: prepare data config
-Replace `$YOUR_LOCAL_PATH` in the generated file `config/data/openvst_500k.yaml` to your save directory.
+Replace `$YOUR_LOCAL_PATH` in the generated file `config/data/vst_500k.yaml` to your save directory.
 
 Or generate the data config:
 ```shell
-python tools/generate_data_config.py $YOUR_LOCAL_PATH/openvst_500k config/data/openvst_500k.yaml
+python tools/generate_data_config.py $YOUR_LOCAL_PATH/vst_500k config/data/vst_500k.yaml
 ```
 
 # Prepare custom data
