@@ -70,6 +70,10 @@ python tools/generate_data_config.py $YOUR_LOCAL_PATH/vst_500k config/data/vst_5
 
 # Prepare custom data
 
+> [!IMPORTANT]
+> We use `<|image_pad|>` and `<|video_pad|>` as the image and video special tokens. one `<|image_pad|>` = one image, one `<|video_pad|>` = one video.
+> Although [these lines](https://github.com/Yangr116/VST/blob/c93eae1fde3304cd2b8a02633dce2f542cec5bae/vst/preprocess.py#L68-L75) can replace `<image>` token as `<|image_pad|>`, we still recomment use `<|image_pad|>` in the custom data.
+
 We prepare the data into the parquet format and calculate the total token nums (used for data packing and iterable dataloder).
 
 Each item must follow this format strictly:
