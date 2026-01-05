@@ -1,41 +1,45 @@
+# Table of Contents
+- [Prepare Environment](#prepare-environment)
+- [Prepare VST Data](#prepare-vst-data)
+- [Prepare Custom Data](#prepare-custom-data)
+- [Train](#train)
+- [Adapt to VLA Model](#adapt-to-vla-model)
 
-# Content
-- [Prepare Env](#-Prepare-ENV)
-- [Prepare data](#-Prepare-data)
-- [Train](#-Train)
-- [Adapt to VLA Model](#-Adapt-to-VLA-Model)
-
-
-# Prepare ENV
+# Prepare Environment
 
 ```bash
 git clone https://github.com/Yangr116/VST
 cd VST
-# install veomni
+
+# Install VeOmni
 git clone -b v0.1.3 https://github.com/ByteDance-Seed/VeOmni.git third_party/VeOmni
 cd third_party/VeOmni
 pip install -e .
-# install requirements
+
+# Install requirements
 cd ../..
 pip install -r requirements.txt
-# install flash-attn (recommend)
+
+# Install flash-attn (recommended)
 pip install flash-attn --no-build-isolation
 ```
 
-NOTE: we use torch2.6.0+cu126, other torch version is also fine.
+> [!NOTE]
+> We use `torch2.6.0+cu126`, but other PyTorch versions are also compatible.
 
+# Prepare VST Data
 
-# Prepare VST data
-
-### Step1: download data
-```shell
-python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH/vst_500k
+### Step 1: Download Data
+```bash
+python tools/download_hf_data.py \
+  --repo_id="rayruiyang/vst_500k" \
+  --local_dir "$YOUR_LOCAL_DIR/vst_500k"
 ```
 
-### Step2: download and preprocess video data
-For the video data, please follow [VLM-3R](https://github.com/VITA-Group/VLM-3R/tree/main/vlm_3r_data_process) to prepare the video files of Scannet, Scannetpp, and arkitscenes:
+### Step 2: Download and Preprocess Video Data
+For video data, please follow the [VLM-3R instructions](https://github.com/VITA-Group/VLM-3R/tree/main/vlm_3r_data_process) to prepare the video files for Scannet, Scannetpp, and ARKitScenes. The directory structure should look like this:
 
-```shell
+```text
 processed_data/
 ├── arkitscenes
 │   └── videos
@@ -47,153 +51,168 @@ processed_data/
 └── scannetpp
     └── videos
 ```
-Then, convert the video file into parquet:
+
+Then, convert the video files into Parquet format:
 ```bash
-jsonfile="$YOUR_LOCAL_PATH/vst_500k/video/video.json"
+jsonfile="$YOUR_LOCAL_DIR/vst_500k/video/video.json"
+
 python prepare_data/sft/convert_json_parquet_video.py \
-  --json_file $jsonfile \
-  --output_dir "$YOUR_LOCAL_PATH/vst_500k/video" \
-  --video_dir "dataset/processed_data" \
+  --json_file "$jsonfile" \
+  --output_dir "$YOUR_LOCAL_DIR/vst_500k/video" \
+  --video_dir "$YOUR_LOCAL_DIR/processed_data" \
   --workers 16 \
   --batch_size 100 \
   --save_batch_size 10 \
   --tag "vst_video"
 ```
 
-### Step3: prepare data config
-Replace `$YOUR_LOCAL_PATH` in the generated file `config/data/vst_500k.yaml` to your save directory.
+### Step 3: Prepare Data Config
+You have two options:
+1.  **Manual:** Replace `$YOUR_LOCAL_DIR` in the generated file `config/data/vst_500k.yaml` with your actual save directory.
+2.  **Automatic:** Generate the data config using the script below:
 
-Or generate the data config:
-```shell
-python tools/generate_data_config.py $YOUR_LOCAL_PATH/vst_500k config/data/vst_500k.yaml
+```bash
+python tools/generate_data_config.py "$YOUR_LOCAL_DIR/vst_500k" config/data/vst_500k.yaml
 ```
 
-# Prepare custom data
+# Prepare Custom Data
 
 > [!IMPORTANT]
-> We use `<|image_pad|>` and `<|video_pad|>` as the image and video special tokens. one `<|image_pad|>` = one image, one `<|video_pad|>` = one video.
-> Although [these lines](https://github.com/Yangr116/VST/blob/c93eae1fde3304cd2b8a02633dce2f542cec5bae/vst/preprocess.py#L68-L75) can replace `<image>` token as `<|image_pad|>`, we still recomment use `<|image_pad|>` in the custom data.
+> **Special Tokens:**
+> *   We use `<|image_pad|>` and `<|video_pad|>` as special tokens.
+> *   Rule: One `<|image_pad|>` = one image; One `<|video_pad|>` = one video.
+> *   Although [the code](https://github.com/Yangr116/VST/blob/c93eae1fde3304cd2b8a02633dce2f542cec5bae/vst/preprocess.py#L68-L75) can automatically replace `<image>` tokens with `<|image_pad|>`, we strongly recommend using `<|image_pad|>` explicitly in your custom data.
 
-We prepare the data into the parquet format and calculate the total token nums (used for data packing and iterable dataloder).
+We require data in **Parquet format** with pre-calculated token numbers (used for data packing and iterable dataloaders).
 
-Each item must follow this format strictly:
+Each item must strictly follow this format:
 ```python
 {
     'conversations': [{'from': 'human', 'value': xxx}, {'from': 'gpt', 'value': xxx}, ...], # list
     'id': item_id, # string
     'data_source': item.get('data_source', data_source), # string
-    'images': [{'bytes': b"xxx", 'path': xxx}, ...],  # list 
+    'images': [{'bytes': b"xxx", 'path': xxx}, ...],  # list
     'type': data_type, # string
     'meta_info': json.dumps(meta_info_list),  # string
 }
 ```
 
+Below are examples for Image and Video data.
 
-Here, we give image and video examples.
+## Image and Multi-image Data
 
-## Image and Multi-image data
+### Example 1: "lmms-lab/LLaVA-NeXT-Data"
 
-### Taking "lmms-lab/LLaVA-NeXT-Data" as an example.
+**Step 1: Download Data**
+```bash
+# Modify cache_dir and local_dir in the script before running.
+# export HF_ENDPOINT='https://hf-mirror.com'  # Uncomment if you need a mirror in Mainland China.
 
-* Step1: Download data:
-```shell
-# modify cache_dir and local_dir in this script and run it, the data will be saved into local_dir
-# export HF_ENDPOINT='https://hf-mirror.com'  # if you don't have a VPN at mainland.
-python tools/download_hf_data.py --repo_id 'lmms-lab/LLaVA-NeXT-Data' --cache_dir $your_cache_dir --local_dir $your_local_path 
+python tools/download_hf_data.py \
+  --repo_id 'lmms-lab/LLaVA-NeXT-Data' \
+  --cache_dir "$$YOUR_CACHE_DIR" \
+  --local_dir "$YOUR_LOCAL_DIR"
 ```
 
-* Step2: Convert the data into required parquet format
-```shell
-python prepare_data/sft/convert_llavanext_parquet.py --data_dir "your_data/LLaVA-NeXT-Data/data" -o "your_save_path" --tag "llava_next_vst"
+**Step 2: Convert to Parquet**
+```bash
+python prepare_data/sft/convert_llavanext_parquet.py \
+  --data_dir "your_data/LLaVA-NeXT-Data/data" \
+  -o "$YOUR_LOCAL_DIR" \
+  --tag "llava_next_vst"
 ```
-Parquet files are under `your_save_path/llava_next_vst`
+*Output files will be located at `$YOUR_LOCAL_DIR/llava_next_vst`.*
 
-Then, to create a yaml file to record the data path (like [config/data/llavanext.yaml](config/data/llavanext.yaml)):
+Next, create a YAML file to record the data path (e.g., `config/data/llavanext.yaml`):
 ```yaml
 - ann_path: llava_next_vst
-  data_dir: your_save_path # revise to your data directory
+  data_dir: $YOUR_LOCAL_DIR # Update this to your data directory
 ```
 
-* Step3: calculate the token num
-```shell
-python tools/compute_num_token.py config/data/llavanext.yaml -p your_model_dir/Qwen2.5-VL-3B-Instruct -w 8
+**Step 3: Calculate Token Count**
+```bash
+python tools/compute_num_token.py config/data/llavanext.yaml \
+  -p $YOUR_MODEL_PATH/Qwen2.5-VL-3B-Instruct \
+  -w 8
 ```
-The token num will be recorded in the yaml file:
+The script will automatically update the YAML file with the token count:
 ```yaml
 - ann_path: llava_next_vst
-  data_dir: your_save_path
+  data_dir: $YOUR_LOCAL_DIR
   token_num: 20531761
 ```
 
+### Example 2: JSON-based Data
 
-### Taking JSON-based data as an example.
-
-You can convert the JSON-based data into required parquet files following this script:
-```shell
-python prepare_data/sft/convert_json_parquet.py -j llavaov_jsonfile -i yourdata/images -o "work_dirs/data" --tag "json_data" -w 8
-```
-
-NOTE:
-each json item should follow the llava format:
-```python
-{
-    'id': xxx,
-    'conversations': xxx, # list
-    'data_source': data_source, # string
-    'images': images,  # list , "image" key is ok
-}
-```
-
-After that, you need to calculate the token num follow the above step-3.
-
-## Video
-
-### Prepare custom video data
-We provide the script to convert the llava video data into parquet format.
-
-Each json item should follow the llava format:
-```python
-{
-    'id': xxx,
-    'conversations': xxx, # list
-    'data_source': data_source, # string
-    'video': video_path,  #  string
-}
-```
-
-Convert the video data into the parquet:
+To convert generic JSON data into the required Parquet format:
 
 ```bash
+python prepare_data/sft/convert_json_parquet.py \
+  -j llavaov_jsonfile \
+  -i yourdata/images \
+  -o "$YOUR_LOCAL_DIR" \
+  --tag "json_data" \
+  -w 8
+```
+
+**Note:** Each JSON item must follow the LLaVA format:
+```python
+{
+    'id': xxx,
+    'conversations': xxx, # list
+    'data_source': data_source, # string
+    'images': images,  # list (key "image" is also acceptable)
+}
+```
+*After conversion, calculate the token count as shown in Step 3 above.*
+
+## Video Data
+
+### Prepare Custom Video Data
+We provide a script to convert LLaVA-style video data into Parquet format.
+
+**Input JSON Format:**
+```python
+{
+    'id': xxx,
+    'conversations': xxx, # list
+    'data_source': data_source, # string
+    'video': video_path,  # string
+}
+```
+
+**Conversion Command:**
+```bash
 jsonfile="LLaVA-Video-178K/0_30_s_academic_v0_1/0_30_s_academic_mc_v0_1_qa_processed.json"
+
 python prepare_data/sft/convert_json_parquet_video.py \
-  --json_file $jsonfile \
-  --output_dir data/video/debug \
-  --video_dir "" \
+  --json_file "$jsonfile" \
+  --output_dir $YOUR_LOCAL_DIR \
+  --video_dir "your_video_save_path" \
   --workers 16 \
   --batch_size 100 \
   --save_batch_size 10 \
-  --tag "debug"
+  --tag "video_debug"
 ```
 
-After that, you need to prepare a yaml file following step-2 and calculate the token num following step-3.
+After conversion, prepare a YAML file (Step 2) and calculate the token count (Step 3).
 
+> [!NOTE]
+> *   **Special Tokens:** We use `<|video_pad|>` as the video special token. The `<image>` token in llava-video JSON files will be automatically replaced by `<|video_pad|>`. See [details here](https://github.com/Yangr116/VST/blob/b32988e85078e2ccac10f662100270fa8550b0d6/prepare_data/sft/convert_json_parquet_video.py#L230-L250). We recommend to directly use `<|video_pad|>` in your file.
+> *   **Frame Limit:** In the training code, max frames are limited by: `max_frames = total_pixels * FRAME_FACTOR // int(min_pixels * 1.05)`. See `vst/utils/vision_process.py` (Line 63).
 
-**NOTE**:
-* We use the `<|video_pad|>` as the video special token. `<image>` special token in the json file will be replaced by `<|video_pad|>` token. Please check [here](https://github.com/Yangr116/VST/blob/b32988e85078e2ccac10f662100270fa8550b0d6/prepare_data/sft/convert_json_parquet_video.py#L230-L250) for details.
-
-* In the training code, we limit the max frames into `max_frames = total_pixels * FRAME_FACTOR // int(min_pixels * 1.05)`, details can be found in line 63 of `vst/utils/vision_process.py`.
-
-
-Now, you can use **the prepared data** and **data config** to train your model!
+**You are now ready to train your model using the prepared data and config!**
 
 # Train
 
-The meaning of the config can be found in [veomni](https://github.com/ByteDance-Seed/VeOmni/blob/main/docs/config/config.md).
+For configuration details, refer to the [VeOmni documentation](https://github.com/ByteDance-Seed/VeOmni/blob/main/docs/config/config.md).
 
-```shell
+```bash
 export WANDB_API_KEY="your_wandb_key"
 ```
-## Stage 1: SFT
+
+## Stage 1: SFT (Supervised Fine-Tuning)
+
 ```bash
 bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_example.yaml \
     --model.model_path 'Qwen/Qwen2.5-VL-3B-Instruct' \
@@ -202,104 +221,103 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
     --train.output_dir 'work_dirs/qwen2_5vl_sft_llavanext_example' \
     --train.wandb_name 'qwen2_5vl_sft_llavanext_example'
 ```
-**NOTE**
-* You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local path.
-* You need to clear `data.train_size`, which is the number of token in the current dataset.
-* video training: reduce `data.buffer_size` if you want to train video only.
 
-#### Merge model
+> [!TIP]
+> *   **Model Path:** You can change `'Qwen/Qwen2.5-VL-3B-Instruct'` to your local model path.
+> *   **Train Size:** Ensure `data.train_size` matches the total number of tokens in your dataset.
+> *   **Video Training:** Reduce `data.buffer_size` to `2000` if you are training on video data only to manage memory usage.
 
-If the model is saved as dcp original format, you need to merge them into huggingface format for evaluation or other purpose:
-```shell
+### Merge Model
+If the model is saved in the original DCP format, merge it into Hugging Face format for evaluation:
+
+```bash
 python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx
 ```
-The huggingface model will be saved to `work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx/hf_ckpt_global_step_xxx`.
+*Output:* `work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx/hf_ckpt_global_step_xxx`
 
+## Stage 2: CoT (Chain of Thought) Cold Start
 
-## Stage 2: CoT Cold Start
+This stage is similar to Stage 1, but uses data containing CoT traces.
 
-As the stage-1, the only thing is to use the data with CoT trace.
+> [!IMPORTANT]
+> *   **Data Format:** The `type` field in the sample must include the `thought` tag. The system prompt for thinking is set based on this `type`.
+> *   **Prompt Customization:** You can revise the custom thinking prompt in `vst/prompt.py`.
 
-**NOTE**: 
-* The `type` in the CoT sample should include `thought` tag because we set the thinking system prompt according to `type`.
-
+**Example Data Format:**
 ```python
 {
-    'conversations': [{'from': 'human', 'value': xxx}, {'from': 'gpt', 'value': '<think>xxx</think> answer'}, ...], # list
-    'id': item_id, # string
-    'data_source': item.get('data_source', data_source), # string
-    'images': [{'bytes': b"xxx", 'path': xxx}, ...],  # list 
-    'type': 'thought_xxx', # string
-    'meta_info': json.dumps(meta_info_list),  # string
+    'conversations': [{'from': 'human', 'value': xxx}, {'from': 'gpt', 'value': '<think>xxx</think> answer'}, ...],
+    'id': item_id,
+    'data_source': item.get('data_source', data_source),
+    'images': [{'bytes': b"xxx", 'path': xxx}, ...],
+    'type': 'thought_xxx', # Must include 'thought'
+    'meta_info': json.dumps(meta_info_list),
 }
 ```
-* You can revise the custom thinking prompt in `vst/prompt.py`
 
-#### Merge model
-
-If the model is saved as dcp original format, you need to merge them into huggingface format for evaluation or other purpose:
-```shell
+### Merge Model
+Merge the DCP checkpoints to Hugging Face format:
+```bash
 python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx
 ```
-The huggingface model will be saved to `work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx/hf_ckpt_global_step_xxx`.
 
-
-## Stage 3: RL
-See [projects/spatial_rl/README.md](projects/spatial_rl/README.md)
+## Stage 3: RL (Reinforcement Learning)
+Please refer to [projects/spatial_rl/README.md](projects/spatial_rl/README.md).
 
 # Adapt to VLA Model
 
-## Prepare LIBERO data
+## Prepare LIBERO Data
 
-### Step1: Download the LIBERO dataset
-You should download the LIBERO dataset following [instructions](https://github.com/Lifelong-Robot-Learning/LIBERO?tab=readme-ov-file#Dataset).
+### Step 1: Download Dataset
+Download the LIBERO dataset by following the [official instructions](https://github.com/Lifelong-Robot-Learning/LIBERO?tab=readme-ov-file#Dataset).
 
-### Step2: Preprocess
-We follow [OpenVLA](https://github.com/openvla/openvla/blob/main/experiments/robot/libero/regenerate_libero_dataset.py) to filter data:
-```
+### Step 2: Preprocess
+We follow [OpenVLA](https://github.com/openvla/openvla/blob/main/experiments/robot/libero/regenerate_libero_dataset.py) to filter the data.
+
+```bash
+# Replace paths with your actual directories
 python prepare_data/vla/libero/regenerate_libero_dataset.py \
     --libero_task_suite libero_spatial \
     --libero_raw_data_dir ./LIBERO/libero/datasets/libero_spatial \
     --libero_target_dir ./LIBERO/libero/datasets/libero_spatial_no_noops
-# you should replace the path
 ```
-Then, we got processed dataset:
-```shell
+
+**Resulting Directory Structure:**
+```text
 ├── libero_10_no_noops
 ├── libero_goal_no_noops
 ├── libero_object_no_noops
 └── libero_spatial_no_noops
 ```
 
-### Step3: Convert to parquet
-```shell
-python prepare_data/vla/libero/preprocess_libero.py \ 
-    --save_dir "./dataset/parquet/vla/libero" \ 
+### Step 3: Convert to Parquet
+```bash
+python prepare_data/vla/libero/preprocess_libero.py \
+    --save_dir "./dataset/parquet/vla/libero" \
     --libero_dir "./LIBERO/libero/datasets"
 ```
 
-We have prepared the data config files at `config/data/vla/*.yaml`, you just need to revise the `data_dir`.
-For example:
+We have prepared config files at `config/data/vla/*.yaml`. You simply need to update the `data_dir`.
+
+**Example (`config/data/vla/libero_spatial.yaml`):**
 ```yaml
 # 28_378_046
 - ann_path: libero_10_no_noops
-  data_dir: dataset/parquet/vla/libero # revise this data_dir into your data dir.
+  data_dir: dataset/parquet/vla/libero # Update this to your data directory
   token_num: 10124377
 ```
 
+## Train VLA Model
 
-## Train VLA model
+Two key parameters are added to the config for VLA training:
 
-We add two parameters in the config:
+| Key | Description |
+| :--- | :--- |
+| `enable_vla` | Set to `true` to use the VLA transform. |
+| `add_tokens` | Set to `['action_token']` to add new action tokens. |
 
-| Key           | Description                       |
-|---------------|-----------------------------------|
-| enable_vla    | `true` using the vla transform           |
-| add_tokens    | `['action_token']` add new action tokens |
-
-
-To train the action model on the spatial subset:
-```shell
+**Training Command (Spatial Subset Example):**
+```bash
 bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_fspd1_new_token.yaml \
     --model.model_path 'rayruiyang/VST-3B-SFT' \
     --data.train_path 'config/data/vla/libero_norm_spatial.yaml' \
@@ -316,19 +334,16 @@ bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_f
     --train.micro_batch_size 16
 ```
 
-#### Merge model
-
-If the model is saved as dcp original format, you need to merge them into huggingface format for evaluation or other purpose:
-```shell
+### Merge Model
+Merge the DCP checkpoints to Hugging Face format:
+```bash
 python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx
 ```
-The huggingface model will be saved to `work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx/hf_ckpt_global_step_xxx`.
-
 
 ## Evaluation on LIBERO
 
-Prepare the LIBERO evaluation env:
-```shell
+**1. Prepare Evaluation Environment:**
+```bash
 git clone https://github.com/Lifelong-Robot-Learning/LIBERO.git
 cd LIBERO
 pip install -e .
@@ -338,12 +353,17 @@ echo N | python -c "from libero.libero import benchmark"
 sudo apt-get install libegl-dev -y
 ```
 
-Then:
-
-```shell
+**2. Run Evaluation:**
+```bash
 bash benchmark/libero/auto_run_vst_vla_libero_norm.sh \
-    $your_model_path \
+    "$your_model_path" \
     "libero_spatial" \
-    $your_work_dirs
+    "$your_work_dirs"
 ```
-`libero_spatial` can be "libero_spatial" "libero_object" "libero_goal" "libero_10"
+
+> [!NOTE]
+> The task argument (`libero_spatial` above) can be replaced with:
+> *   `libero_spatial`
+> *   `libero_object`
+> *   `libero_goal`
+> *   `libero_10`

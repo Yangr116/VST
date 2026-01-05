@@ -211,7 +211,7 @@ if __name__ == "__main__":
     
     debug = args.debug
     if debug:
-        debug_args = (("/opt/tiger/rayyang/spatial/data/2D/LLaVA-NeXT-Data/data/train-00008-of-00250.parquet", os.path.join(output_dir, f"{tag}_0.parquet"), "", 0), 100)
+        debug_args = (("LLaVA-NeXT-Data/data/train-00008-of-00250.parquet", os.path.join(output_dir, f"{tag}_0.parquet"), "", 0), 100)
         convert_parquet_to_parquet(debug_args)
         sys.exit()
 
