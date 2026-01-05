@@ -181,7 +181,7 @@ We provide a script to convert LLaVA-style video data into Parquet format.
 }
 ```
 
-**Conversion Command:**
+Convert to the parquet format:
 ```bash
 jsonfile="LLaVA-Video-178K/0_30_s_academic_v0_1/0_30_s_academic_mc_v0_1_qa_processed.json"
 
@@ -193,6 +193,42 @@ python prepare_data/sft/convert_json_parquet_video.py \
   --batch_size 100 \
   --save_batch_size 10 \
   --tag "video_debug"
+```
+
+Please ensure that the item in the parquet is the same as:
+```python
+import datasets
+
+file = "your_file.parquet"
+dataset = datasets.load_dataset('parquet', data_files=[file], streaming=True, split='train')
+sample = next(iter(dataset))
+sample['images'][0]['bytes'] = ""
+print(sample)
+```
+Output should follow the below format:
+```json
+{
+  "conversations": [
+    {
+      "from": "human",
+      "value": "<|video_pad|>These are frames of a video.\nMeasuring from the closest point of each object, what is the direct distance between the trash can and the table (in meters)?\nPlease answer the question using a single word or phrase."
+    },
+    {
+      "from": "gpt",
+      "value": "3.5"
+    }
+  ],
+  "id": "22682318-7c1d-4c0e-b734-b4fb59af6f83",
+  "data_source": "xxx",
+  "images": [
+    {
+      "bytes": b"",
+      "path": ""
+    }
+  ],
+  "type": "video",
+  "meta_info": "\"[{\\\"height\\\": -1, \\\"resized_height\\\": -1, \\\"resized_width\\\": -1, \\\"width\\\": -1}]\""
+}
 ```
 
 After conversion, prepare a YAML file (Step 2) and calculate the token count (Step 3).
