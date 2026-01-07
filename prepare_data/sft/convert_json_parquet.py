@@ -46,7 +46,7 @@ def process_single_sample(sample, image_dir, jsonfile, data_type='mm_qa'):
         meta_info_list.append(meta_info)
     # resize
     images = [{'bytes': encode_image_to_bytes(image_pil), 'path': image_path} for image_pil, image_path in zip(image_pil_list, image_path_list)]
-    conversations = build_convs(sample['conversations']),
+    conversations = build_convs(sample['conversations'])
 
     uid = sample.get('uuid', str(uuid.uuid4()))
     parquet_item = dict(
