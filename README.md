@@ -239,7 +239,7 @@ There are 500K reproduced data points [[rayruiyang/vst_500k](https://huggingface
 python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH
 ```
 
-**[Optinal]** You can parse the parquet data into a json file and raw images by:
+**[Optional]** You can parse the parquet data into a json file and raw images by:
 ```bash
 python tools/parse_vst_500k.py --data_dir "$YOUR_LOCAL_PATH/vst_500k"
 ```
