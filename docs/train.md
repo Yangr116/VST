@@ -36,6 +36,21 @@ python tools/download_hf_data.py \
   --local_dir "$YOUR_LOCAL_DIR/vst_500k"
 ```
 
+[Optinal] You can parse the parquet data into a json file and raw images by:
+```bash
+python tools/parse_vst_500k.py --data_dir "$YOUR_LOCAL_PATH/vst_500k"
+```
+You will get the data:
+```text
+data/
+├── images
+├── vst_500k.json
+```
+
+> [!NOTE]
+> *  We use `<|image_pad|>` and `<|video_pad|>` as the image and video special token. 
+
+
 ### Step 2: Download and Preprocess Video Data
 For video data, please follow the [VLM-3R instructions](https://github.com/VITA-Group/VLM-3R/tree/main/vlm_3r_data_process) to prepare the video files for Scannet, Scannetpp, and ARKitScenes. The directory structure should look like this:
 

@@ -20,12 +20,10 @@ We introduce **Visual Spatial Tuning (VST)**, a comprehensive framework designed
 
 ## 💡 Key Highlights
 
-✨ **VST-P**: 4.1M samples across 19 skills, spanning single images, multi-image scenarios, and videos—boosting spatial perception in VLMs.  
-✨ **VST-R**: 135K curated samples that teach models to reason in space, including step-by-step reasoning and rule-based data for reinforcement learning.  
-✨ **Progressive Training Pipeline**: Start with supervised fine-tuning to build foundational spatial perception, then reinforce spatial reasoning abilities via RL. VST achieves state-of-the-art results on spatial benchmarks (34.8% on MMSI-Bench, 61.2% on VSIBench) without compromising general capabilities.  
-✨ **Vision-Language-Action Models Enhanced**: The VST paradigm significantly strengthens robotic learning.
-
----
+* **VST-P**: 4.1M samples across 19 skills, spanning single images, multi-image scenarios, and videos—boosting spatial perception in VLMs.  
+* **VST-R**: 135K curated samples that teach models to reason in space, including step-by-step reasoning and rule-based data for reinforcement learning.  
+* **Progressive Training Pipeline**: Start with supervised fine-tuning to build foundational spatial perception, then reinforce spatial reasoning abilities via RL. VST achieves state-of-the-art results on spatial benchmarks (34.8% on MMSI-Bench, 61.2% on VSIBench) without compromising general capabilities.  
+* **Vision-Language-Action Models Enhanced**: The VST paradigm significantly strengthens robotic learning.
 
 ---
 
@@ -119,11 +117,6 @@ python tools/download_hf_model.py --model_list rayruiyang/VST-3B-SFT rayruiyang/
 
 
 ## ⚡ Getting Started
-```bash
-pip install transformers
-# It's highly recommanded to use `[decord]` feature for faster video loading.
-pip install qwen-vl-utils
-```
 
 ### Training & Evaluation
 
@@ -144,6 +137,13 @@ pip install qwen-vl-utils
 
 ### Using 🤗  Transformers to Chat
 
+Install the inference dependency:
+```bash
+pip install transformers
+pip install qwen-vl-utils
+```
+
+Then:
 ```python
 import torch
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoTokenizer, AutoProcessor
@@ -202,7 +202,7 @@ inputs = processor(
 inputs = inputs.to("cuda")
 
 # Inference: Generation of the output
-generated_ids = model.generate(**inputs, max_new_tokens=128)
+generated_ids = model.generate(**inputs, max_new_tokens=1280)
 generated_ids_trimmed = [
     out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
 ]
@@ -232,11 +232,26 @@ print(output_text[0])
 - VLMs tuned on VST-R demonstrate:
   - 8.9% improvement on MMSI-Bench
 
+---
 
 There are 500K reproduced data points [[rayruiyang/vst_500k](https://huggingface.co/datasets/rayruiyang/vst_500k)] for academic purposes. You can download them:
 ```shell
 python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH
 ```
+
+**[Optinal]** You can parse the parquet data into a json file and raw images by:
+```bash
+python tools/parse_vst_500k.py --data_dir "$YOUR_LOCAL_PATH/vst_500k"
+```
+You will get the data:
+```text
+data/
+├── images
+├── vst_500k.json
+```
+
+> [!NOTE]
+> *  We use `<|image_pad|>` and `<|video_pad|>` as the image and video special token. 
 
 
 ## 📜 License
