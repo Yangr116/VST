@@ -18,12 +18,13 @@ for part in "${arr[@]}"; do
 done
 basename=$longest
 modified_string=$longest
-work_dir="evaluation-cot-$basename-$datetime"
+work_dir="evaluation-$basename-$datetime"
 echo "$work_dir"
+
 
 # vlmevalkit
 work_dir="work_dirs/$work_dir"
 mkdir -p $work_dir
 
 torchrun --nnodes=$NNODES --nproc-per-node $NPROC_PER_NODE --node-rank $NODE_RANK \
-  --master-port=$MASTER_PORT run.py --config config_vlm3dreasoner.json --model_path "$model_path" --work-dir "$work_dir" --use-vllm 2>&1 | tee "work_dirs/$modified_string-log.txt"
+  --master-port=$MASTER_PORT benchmark/run.py --config config_qwen2_5.json --model_path "$model_path" --work-dir "$work_dir" 2>&1 | tee "work_dirs/$modified_string-log.txt"

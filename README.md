@@ -120,11 +120,11 @@ python tools/download_hf_model.py --model_list rayruiyang/VST-3B-SFT rayruiyang/
 
 ### Training & Evaluation
 
-**SFT**: Please follow [docs/train.md](./docs/train.md) to prepare env, data and train models.
+**SFT**: Please follow [assets/train.md](./assets/train.md) to prepare env, data and train models.
 
 **RL**: Please follow [projects/spatial_rl/README.md](projects/spatial_rl/README.md) to prepare env, data and train models using RL.
 
-**Evaluation**: Please follow [docs/evaluation.md](./docs/evaluation.md) to evaluate models.
+**Evaluation**: Please follow [benchmark/README.md](./benchmark/README.md) to evaluate models.
 
 
 ### Cookbook

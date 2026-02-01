@@ -162,5 +162,6 @@ wandb
 logfile
 work_dirs
 work_dirs/*
+data/*
 
 .DS_Store

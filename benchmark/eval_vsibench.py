@@ -57,7 +57,7 @@ METRICS_FOR_NA = {
 hf_home = os.getenv("HF_HOME", "~/.cache/huggingface/")
 base_cache_dir = os.path.expanduser(hf_home)
 
-with open(Path(__file__).parent / "vsibench.yaml", "r") as f:
+with open(Path(__file__).parent / "utils" / "vsibench.yaml", "r") as f:
     raw_data = f.readlines()
     safe_data = []
     for i, line in enumerate(raw_data):

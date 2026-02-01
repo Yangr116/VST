@@ -20,7 +20,7 @@ output_dir="$2/vsibench_fps$fps"
 PIDS=()
 for IDX in $(seq 0 $((CHUNKS-1))); do
     echo "$IDX"
-    CUDA_VISIBLE_DEVICES=$IDX python eval_vsibench.py \
+    CUDA_VISIBLE_DEVICES=$IDX python benchmark/eval_vsibench.py \
         --model_name_or_path $model_path \
         --total-processor $CHUNKS \
         --processor-id $IDX \
@@ -34,4 +34,4 @@ for pid in "${PIDS[@]}"; do
     wait $pid
 done
 
-python utils/merge_vsibench.py --result-dir $output_dir
+python benchmark/utils/merge_vsibench.py --result-dir $output_dir

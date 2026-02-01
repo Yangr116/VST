@@ -51,17 +51,29 @@ def encode_json(data: List[Dict]):
     result = f'```json\n{array_str}\n```'
     return result
 
-def extract_bbox3d_from_json(input_string, from_range: str='180', to_range: str = '180'):
-    def _extract_bbox(input_string, from_range: str='180', to_range: str = '180'):
-        results = decode_bbox3d_dict_from_json(input_string)
+
+def extract_bbox3d_from_json(input_string, from_range: str='180', to_range: str = '180', rotation_type='euler'):
+    def _extract_bbox(input_string, from_range: str='180', to_range: str = '180', rotation_type: str = 'euler'):
+        output_string = parse_json(input_string)
+        results = json.loads(output_string)
         bboxes3d = [x.get("bbox_3d", None) for x in results]
-        bboxes3d = [convert_degree_range(x, from_range=from_range, to_range=to_range) for x in bboxes3d if x is not None and len(x)==9]
+        if rotation_type == 'quat':
+            bboxes3d = [convert_quat2euler(x) for x in bboxes3d if x is not None and len(x) == 10]
+        else:
+            bboxes3d = [convert_degree_range(x, from_range=from_range, to_range=to_range) for x in bboxes3d if x is not None and len(x)==9]
         return bboxes3d
     try:
-        bboxes3d = _extract_bbox(input_string, from_range=from_range, to_range=to_range)
+        bboxes3d = _extract_bbox(input_string, from_range=from_range, to_range=to_range, rotation_type=rotation_type)
     except:
         bboxes3d = []
     return bboxes3d
+
+
+def convert_quat2euler(bbox3d: list):
+    rotation = Rotation.from_quat(bbox3d[-4:])
+    euler = rotation.as_euler('xyz', degrees=True)
+    bbox3d = bbox3d[:6] + euler.tolist()
+    return bbox3d
 
 
 def convert_degree_range(bbox3d: list, from_range: str='180', to_range: str = '180'):
