@@ -67,6 +67,9 @@ pip install pytorch3d-0.7.9+pt2.6.0cu126-cp310-cp310-linux_x86_64.whl
 
 ### 2. Prepare the Benchmark Data
 
+[![Benchmark](https://img.shields.io/badge/Benchmark-4d8cd8?style=for-the-badge&logo=huggingface&logoColor=white)](https://huggingface.co/datasets/rayruiyang/vst_3d_grounding_benchmark)
+
+
 Download and extract the 3D grounding benchmark:
 
 ```bash
