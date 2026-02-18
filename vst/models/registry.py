@@ -27,13 +27,15 @@ from veomni.utils import logging
 from veomni.models.registry import ModelRegistry
 
 from vst.models.transformers.qwen2_5vl.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGeneration
+from vst.models.transformers.qwen3vl.modeling_qwen3_vl import Qwen3VLForConditionalGeneration
 logger = logging.get_logger(__name__)
 
 
 logger.warning(f"="*10+ "Register new models" +"="*10)
 
 models = [
-    Qwen2_5_VLForConditionalGeneration
+    Qwen2_5_VLForConditionalGeneration,
+    Qwen3VLForConditionalGeneration
 ]
 
 for model in models:

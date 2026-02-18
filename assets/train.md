@@ -255,14 +255,15 @@ After conversion, prepare a YAML file (Step 2) and calculate the token count (St
 **You are now ready to train your model using the prepared data and config!**
 
 # Train
-
 For configuration details, refer to the [VeOmni documentation](https://github.com/ByteDance-Seed/VeOmni/blob/main/docs/config/config.md).
 
 ```bash
 export WANDB_API_KEY="your_wandb_key"
 ```
 
-## Stage 1: SFT (Supervised Fine-Tuning)
+## Qwen2_5_VL
+
+### Stage 1: SFT (Supervised Fine-Tuning)
 
 ```bash
 bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_example.yaml \
@@ -280,7 +281,7 @@ bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_ex
 > *   **Video Training:** Reduce `data.buffer_size` to `2000` if you are training on video data only to manage memory usage.
 > *   **Max sequence length**: `data.max_seq_len` is default to 16384. During preprocessing video, max frames are limited by `max_seq_len`. See vst/utils/vision_process.py (Line 63).
 
-### Merge Model
+#### Merge Model
 If the model is saved in the original DCP format, merge it into Hugging Face format for evaluation:
 
 ```bash
@@ -288,7 +289,7 @@ python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoin
 ```
 *Output:* `work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx/hf_ckpt_global_step_xxx`
 
-## Stage 2: CoT (Chain of Thought) Cold Start
+### Stage 2: CoT (Chain of Thought) Cold Start
 
 This stage is similar to Stage 1, but uses data containing CoT traces.
 
@@ -308,14 +309,27 @@ This stage is similar to Stage 1, but uses data containing CoT traces.
 }
 ```
 
-### Merge Model
+#### Merge Model
 Merge the DCP checkpoints to Hugging Face format:
 ```bash
 python tools/veomni_to_hf.py work_dirs/qwen2_5vl_sft_llavanext_example/checkpoints/global_steps_xxx
 ```
 
-## Stage 3: RL (Reinforcement Learning)
+### Stage 3: RL (Reinforcement Learning)
 Please refer to [projects/spatial_rl/README.md](https://github.com/Yangr116/VST/blob/master/projects/spatial_rl/README.md).
+
+
+## Qwen3VL
+SFT examples:
+```
+bash scripts/train.sh vst/train.py config/veomni/qwen3vl/qwen3_vl_fspd1_fov_packing_example.yaml \
+    --model.model_path 'Qwen/Qwen3-VL-8B-Instruct' \
+    --data.train_path 'config/data/llavanext.yaml' \
+    --data.train_size 20_531_761 \
+    --train.output_dir 'work_dirs/debug' \
+    --train.wandb_name 'qwen3vl_sft_llavanext_example'
+```
+
 
 ## Debug
 Use this script to debug:

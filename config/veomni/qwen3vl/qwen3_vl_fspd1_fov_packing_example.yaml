@@ -1,6 +1,6 @@
 model:
-  model_path: Qwen2.5-VL-3B-Instruct
-  attn_implementation: 'sdpa'
+  model_path: Qwen/Qwen3-VL-8B-Instruct
+  attn_implementation: 'flash_attention_2'
   max_pixels: 3211264
 
 data:
@@ -18,15 +18,15 @@ data:
 train:
   enable_fov: true
   fov_no_resize: false
-  output_dir: work_dirs/qwen2_5vl_sft_llavanext_example
+  output_dir: work_dirs/qwen3vl_sft_llavanext_example
   enable_gradient_checkpointing: true
   enable_mixed_precision: true
   data_parallel_mode: fsdp1
   enable_full_shard: true
   # enable_fsdp_offload: true
   # enable_activation_offload: true
-  wandb_project: veomni_qwen2vl_sft
-  wandb_name: qwen2_5vl_sft_llavanext_example
+  wandb_project: veomni_qwen3vl_sft
+  wandb_name: qwen3vl_sft_llavanext_example
   rmpad: false
   rmpad_with_pos_ids: true
   ulysses_parallel_size: 1
