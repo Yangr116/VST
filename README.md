@@ -15,7 +15,7 @@ We introduce **Visual Spatial Tuning (VST)**, a comprehensive framework designed
 ---
 
 ## 🔥 News
-* Support Qwen3VL trainig code, see [assets/train.md](./assets/train.md#qwen3vl) for more details.
+* Support Qwen3VL training code, see [assets/train.md](./assets/train.md#qwen3vl) for more details.
 * Training code has been updated and verified, please see [Train](###train), which is very efficient because of data packing.
 
 
