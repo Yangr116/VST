@@ -320,6 +320,8 @@ Please refer to [projects/spatial_rl/README.md](https://github.com/Yangr116/VST/
 
 
 ## Qwen3VL
+Update `transformers==4.57.0` and `liger_kernel==0.7.0`.
+
 SFT examples:
 ```
 bash scripts/train.sh vst/train.py config/veomni/qwen3vl/qwen3_vl_fspd1_fov_packing_example.yaml \
