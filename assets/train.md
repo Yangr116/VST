@@ -320,7 +320,11 @@ Please refer to [projects/spatial_rl/README.md](https://github.com/Yangr116/VST/
 
 
 ## Qwen3VL
-Update `transformers==4.57.0` and `liger_kernel==0.7.0`.
+Update `transformers` and `liger_kernel`.
+```bash
+pip install transformers==4.57.0 liger_kernel==0.7.0
+```
+
 
 SFT examples:
 ```
