@@ -127,6 +127,7 @@ python tools/download_hf_model.py --model_list rayruiyang/VST-3B-SFT rayruiyang/
 
 **Evaluation**: Please follow [benchmark/README.md](./benchmark/README.md) to evaluate models.
 
+**VLA**: Please follow [assets/vla.md](./assets/vla.md) to train vla  models.
 
 ### Cookbook
 
