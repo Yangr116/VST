@@ -240,6 +240,9 @@ There are 500K reproduced data points [[rayruiyang/vst_500k](https://huggingface
 ```shell
 python tools/download_hf_data.py --repo_id="rayruiyang/vst_500k" --local_dir $YOUR_LOCAL_PATH
 ```
+> [!NOTE]
+> *  This data doesn't include the video files, please follow [here](./assets/train.md#prepare-vst-data) to prepare video files.
+> *  We use `<|image_pad|>` and `<|video_pad|>` as the image and video special token. 
 
 **[Optional]** You can parse the parquet data into a json file and raw images by:
 ```bash
@@ -252,8 +255,6 @@ data/
 ├── vst_500k.json
 ```
 
-> [!NOTE]
-> *  We use `<|image_pad|>` and `<|video_pad|>` as the image and video special token. 
 
 
 ## 📜 License
