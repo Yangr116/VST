@@ -72,10 +72,11 @@ Two key parameters are added to the config for VLA training:
 | :--- | :--- |
 | `enable_vla` | Set to `true` to use the VLA transform. |
 | `add_tokens` | Set to `['action_token']` to add new action tokens. |
+| `enable_augmentation` | Set to `true` to enable data augmentation. |
 
 **Training Command (Spatial Subset Example):**
 ```bash
-bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_fspd1_new_token.yaml \
+bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_fspd1_new_token_aug.yaml \
     --model.model_path 'rayruiyang/VST-3B-SFT' \
     --data.train_path 'config/data/vla/libero_norm_spatial.yaml' \
     --data.train_size 5_800_000 \
@@ -83,12 +84,13 @@ bash scripts/train.sh vst/train_vla.py config/veomni/qwen2_5vla/vla_qwen2_5_vl_f
     --train.wandb_name '20250824_vla_qwen2_5vl_3b_spatial_sft_libero_spatial' \
     --data.num_workers 2 \
     --data.buffer_size 6000 \
-    --train.lr_warmup_ratio 0.03 \
-    --train.num_train_epochs 50 \
-    --train.lr 0.00008 \
-    --train.vit_lr 0.000008 \
-    --data.max_seq_len 2048 \
-    --train.micro_batch_size 16
+    --train.lr_warmup_ratio 0.1 \
+    --train.num_train_epochs 200 \
+    --train.lr 0.00005 \
+    --train.vit_lr 0.000005 \
+    --data.max_seq_len 1024 \
+    --train.micro_batch_size 16 \
+    --train.global_batch_size 128
 ```
 
 ### Merge Model

@@ -190,6 +190,12 @@ class MyDataArguments(DataArguments):
     buffer_size: int = field(
         default=10_000,
     )
+    enable_augmentation: bool = field(
+        default=False
+    )
+    image_size: int = field(
+        default=256,
+    )
 
 
 @dataclass
@@ -338,6 +344,8 @@ def main():
             position_id_func=position_id_func,
             action_tokenizer=action_tokenizer,
             max_seq_len=args.data.max_seq_len,
+            enable_augmentation=args.data.enable_augmentation,
+            image_size=args.data.image_size,
         )
     else:
         transform = SampleTransform(

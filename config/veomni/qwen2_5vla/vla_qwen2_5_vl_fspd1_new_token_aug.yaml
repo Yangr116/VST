@@ -1,0 +1,53 @@
+model:
+  model_path: Qwen2.5-VL-3B-Instruct
+  attn_implementation: 'flash_attention_2'
+  max_pixels: 12845056
+  enable_vla: true
+  add_tokens: ['action_token']
+
+data:
+  train_path: config/data/vla/libero_norm_spatial.yaml
+  chat_template: qwen2_5vl
+  max_seq_len: 2048
+  fps: 2
+  train_size: 1200000000  # 1.2B token 去做 2 epoch
+  dataset_length: 1400000  # 1.4 M, set less 1.4M, used without packing
+  dataloader_type: "native"
+  datasets_type: "iterable"
+  data_name: "llava_sft_preprocess"
+  num_workers: 4
+  pin_memory: false
+  buffer_size: 6000
+  enable_augmentation: true
+  image_size: 256
+
+train:
+  enable_fov: false
+  enable_quat: false
+  remove_intrinsics: false
+  output_dir: ./work_dirs/libero_norm_spatial
+  enable_gradient_checkpointing: true
+  enable_mixed_precision: false
+  data_parallel_mode: fsdp1
+  enable_full_shard: true
+  # enable_fsdp_offload: true
+  # enable_activation_offload: true
+  wandb_project: veomni_qwen2vl_sft_3d_exp
+  wandb_name: vla
+  rmpad: false
+  rmpad_with_pos_ids: true
+  ulysses_parallel_size: 1
+  freeze_vit: false
+  freeze_llm: false
+  freeze_merger: false
+  lr: 1.0e-5
+  vit_lr: 1.0e-6
+  lr_warmup_ratio: 0.03
+  lr_decay_style: cosine
+  num_train_epochs: 1
+  micro_batch_size: 4
+  global_batch_size: 128
+  save_steps: 500
+  save_hf_weights: false
+  empty_cache_steps: 100
+  ckpt_manager: dcp

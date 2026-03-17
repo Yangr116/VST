@@ -3,6 +3,8 @@ import json
 import torch
 from typing import Any, Dict, Callable, Optional
 from transformers import ProcessorMixin
+import torchvision.transforms as T
+from loguru import logger
 
 from veomni.data.constants import IMAGE_INPUT_INDEX, VIDEO_INPUT_INDEX
 from veomni.data.chat_template import ChatTemplate
@@ -20,6 +22,8 @@ class SampleTransformVLA:
             position_id_func: "Callable",
             action_tokenizer: "ActionTokenizer",
             max_seq_len: int = 8192,
+            enable_augmentation: bool = True,
+            image_size: int = 256,
             **kwargs,
     ) -> None:
         self.processor = processor
@@ -27,7 +31,23 @@ class SampleTransformVLA:
         self.position_id_func = position_id_func
         self.action_tokenizer = action_tokenizer
         self.max_seq_len = max_seq_len
-    
+        self.enable_augmentation = enable_augmentation
+
+
+        H, W = image_size, image_size
+        logger.warning(f"We set the image_size to {image_size}")
+        scale = (0.8, 1.0)
+        ratio = (1.0, 1.0)
+        self.image_aug = T.Compose([
+            T.RandomResizedCrop(size=(H, W), scale=scale, ratio=ratio),
+            T.ColorJitter(
+                brightness=0.2,
+                contrast=(0.8, 1.2),
+                saturation=(0.8, 1.2),
+                hue=0.05
+            ),
+        ])
+
     def __call__(self, sample: Dict, **kwargs) -> Dict:
         sample['images'] = load_vision_inputs(sample)
         meta_info = json.loads(sample['meta_info'])
@@ -41,6 +61,12 @@ class SampleTransformVLA:
         sample['conversations'] = conversations
         messages = convert_llava2qwen(sample, include_system=False)
         image_inputs, video_inputs = process_vision_info(messages)
+        if self.enable_augmentation and image_inputs is not None and random.random() > 0.5:
+            new_image_inputs = []
+            for image_input in image_inputs:
+                new_image_inputs.append(self.image_aug(image_input))
+            image_inputs = new_image_inputs
+
         messages = qwen_messages_sft_preprocess(messages, **kwargs)
 
         token_num_inputs, vision_inputs = {}, {}
@@ -68,8 +94,7 @@ class SampleTransformVLA:
             video_grid_thw=video_grid_thw,
             attention_mask=tokenized_example["attention_mask"].unsqueeze(0),
         )["position_ids"]
-        if position_ids is not None:
-            tokenized_example["position_ids"] = position_ids.squeeze().clone()  # (dim, l)
+        tokenized_example["position_ids"] = position_ids  # (dim, l)
 
         tokenized_example["image_mask"] = tokenized_example["input_ids"] == IMAGE_INPUT_INDEX
         tokenized_example["video_mask"] = tokenized_example["input_ids"] == VIDEO_INPUT_INDEX
