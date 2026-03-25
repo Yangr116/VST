@@ -5,6 +5,7 @@ from typing import Any, Dict, Callable, Optional
 from transformers import ProcessorMixin
 import torchvision.transforms as T
 from loguru import logger
+import random
 
 from veomni.data.constants import IMAGE_INPUT_INDEX, VIDEO_INPUT_INDEX
 from veomni.data.chat_template import ChatTemplate
@@ -94,7 +95,8 @@ class SampleTransformVLA:
             video_grid_thw=video_grid_thw,
             attention_mask=tokenized_example["attention_mask"].unsqueeze(0),
         )["position_ids"]
-        tokenized_example["position_ids"] = position_ids  # (dim, l)
+        if position_ids is not None:
+            tokenized_example["position_ids"] = position_ids.squeeze().clone()  # (dim, l)
 
         tokenized_example["image_mask"] = tokenized_example["input_ids"] == IMAGE_INPUT_INDEX
         tokenized_example["video_mask"] = tokenized_example["input_ids"] == VIDEO_INPUT_INDEX

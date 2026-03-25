@@ -208,7 +208,7 @@ class MyModelArguments(ModelArguments):
         default=MIN_PIXELS,
         metadata={"help": "expectied max pixels."},
     )
-    vlm3d: Optional[bool] = field(
+    vst_custom_model: Optional[bool] = field(
         default=False, 
         metadata={"help": "Does't continue training from qwenvl model"},
     )
@@ -287,8 +287,8 @@ def main():
     )
 
     logger.info_rank0("Prepare model")
-    if args.model.vlm3d:
-        model = build_vlm3d_model(
+    if args.model.vst_custom_model:
+        model = build_vst_custom_model(
             config_path=args.model.config_path,
             weights_path=args.model.model_path,
             encoders=args.model.encoders,

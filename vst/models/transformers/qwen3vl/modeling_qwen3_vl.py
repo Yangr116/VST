@@ -25,25 +25,29 @@ from typing import Any, Optional, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from loguru import logger
+
 from transformers.activations import ACT2FN
 from transformers.cache_utils import Cache, DynamicCache
 from transformers.generation import GenerationMixin
-from transformers.integrations import use_kernel_forward_from_hub
-from transformers.masking_utils import create_causal_mask
 from transformers.modeling_flash_attention_utils import FlashAttentionKwargs
-from transformers.modeling_layers import GradientCheckpointingLayer
 from transformers.modeling_outputs import BaseModelOutputWithPast, ModelOutput
 from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS, dynamic_rope_update
 from transformers.modeling_utils import ALL_ATTENTION_FUNCTIONS, PreTrainedModel
-from transformers.models.qwen3_vl.configuration_qwen3_vl import Qwen3VLConfig, Qwen3VLTextConfig, Qwen3VLVisionConfig
 from transformers.processing_utils import Unpack
+from transformers.utils.deprecation import deprecate_kwarg
+
+from transformers.integrations import use_kernel_forward_from_hub
+from transformers.masking_utils import create_causal_mask
+from transformers.modeling_layers import GradientCheckpointingLayer
+from transformers.models.qwen3_vl.configuration_qwen3_vl import Qwen3VLConfig, Qwen3VLTextConfig, Qwen3VLVisionConfig
 from transformers.utils import (
     TransformersKwargs,
     auto_docstring,
     is_torchdynamo_compiling,
     replace_return_docstrings,
 )
-from transformers.utils.deprecation import deprecate_kwarg
 from transformers.utils.generic import check_model_inputs
 
 from veomni.distributed.parallel_state import get_parallel_state

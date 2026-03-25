@@ -62,17 +62,7 @@ class IterativeDataset(IterableDataset):
     def __iter__(self):
         while True: # continuting to read data
             for sample in self._data:
-                if self._transform is not None:
-                    
-                    # transformed_samples = self._transform(sample)
-                    # if self.exceed_max_length(transformed_samples, sample):
-                    #     sample['conversations'] = sample['conversations'][:2]
-                    #     transformed_samples = self._transform(sample)
-                    # if self.exceed_max_length(transformed_samples, sample):
-                    #     sample['conversations'] = DUMMY_CONV
-                    #     transformed_samples = self._transform(sample)
-                    # yield transformed_samples
-                    
+                if self._transform is not None:                    
                     try:
                         transformed_samples = self._transform(sample)
                         yield transformed_samples
@@ -136,14 +126,7 @@ def build_iterative_dataset(
         data_paths = data_path.split(",")
         for data_path in data_paths:
             if data_path.startswith("hdfs://"):
-                if not hisdir(data_path):
-                    raise FileNotFoundError(f"Dataset {data_path} not exists.")
-
-                for filename in hlist_files(folders=[data_path]):
-                    from veomni.utils.helper import get_cache_dir
-
-                    data_files.append(hf_hub_download(data_path, os.path.split(filename)[-1], cache_dir=get_cache_dir()))
-
+                raise ValueError(f"Dataset {data_path} is not supported.")
             elif os.path.isdir(data_path):
                 data_files.extend([os.path.join(data_path, fn) for fn in os.listdir(data_path)])
             elif os.path.isfile(data_path):

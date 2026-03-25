@@ -266,6 +266,7 @@ export WANDB_API_KEY="your_wandb_key"
 ### Stage 1: SFT (Supervised Fine-Tuning)
 
 ```bash
+# please revise the NPROC_PER_NODE, MASTER_ADDR for your own training setup
 bash scripts/train.sh vst/train.py config/veomni/qwen2_5_vl_fspd1_fov_packing_example.yaml \
     --model.model_path 'Qwen/Qwen2.5-VL-3B-Instruct' \
     --data.train_path 'config/data/llavanext.yaml' \
